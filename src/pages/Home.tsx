@@ -9,7 +9,7 @@ export default function Home() {
     return (
         <>
             <header className="bg-sage">
-                    <Navbar/>
+                    <Navbar getStarted={true}/>
                     <Hero/>
             </header>
             <section className="flex md:flex-row flex-col md:gap-x-24 gap-y-12 md:justify-center items-center p-10 max-w-7xl mx-auto">
