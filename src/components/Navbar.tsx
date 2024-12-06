@@ -1,8 +1,6 @@
 import { Link } from 'react-router-dom';
 
-export default function Navbar(props: {getStarted: boolean}) {
-
-    const {getStarted} = props;
+export default function Navbar({ getStarted }: {getStarted: boolean}): JSX.Element {
 
     return (
         <div className="flex justify-between items-center text-l p-10 max-w-7xl mx-auto">

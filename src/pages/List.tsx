@@ -2,18 +2,21 @@ import { useState, useEffect } from "react";
 import Items from "../components/Items";
 import Navbar from "../components/Navbar";
 
-export default function List() {
+export default function List(): JSX.Element {
 
     const [shoppingList, setShoppingList] = useState(["Bacon", "Pepsi Max", "Rabbit Kibble", "Hay", "Jaffa Cakes", "Pigs in Blankets", "Ham Hock", "Baileys", "Harringtons Adult Mixed Grain Free Bumper Pack", "Mozzarella Sticks",
         "Yorkshire Puddings", "Knobbly Bobblys", "Turkey Crown"])
 
-    function moveItem(itemName: string): void {
-        const index = shoppingList.findIndex((element) => element === itemName);
-        console.log(shoppingList[index])
-        setShoppingList(() => {
-            const arr = shoppingList.splice(index, 1)[0]
-            console.log(`arr: ${arr}`)
-            return [...shoppingList, arr]
+    function moveItem(itemName: string, marked: boolean): void {
+        setShoppingList((prevShoppingList) => {
+            const index: number = shoppingList.findIndex((element) => element === itemName);
+
+            if (index === -1) return prevShoppingList;
+
+            const listCopy: string[] = [...prevShoppingList];
+            const [item]: string[] = listCopy.splice(index, 1)
+            marked ? listCopy.unshift(item) : listCopy.push(item);
+            return listCopy;
         })
         
     }

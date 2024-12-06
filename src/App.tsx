@@ -4,7 +4,7 @@ import Create from './pages/Create'
 import Home from './pages/Home'
 import List from './pages/List'
 
-function App() {
+function App(): JSX.Element {
 
   return (
     <BrowserRouter>

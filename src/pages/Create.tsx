@@ -1,7 +1,7 @@
 import Navbar from '../components/Navbar'
 import CreateLinkForm from '../components/CreateLinkForm'
 
-export default function Create() {
+export default function Create(): JSX.Element {
     return (
         <div className='bg-sage h-dvh text-center'>
             <Navbar getStarted={true}/>

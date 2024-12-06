@@ -5,7 +5,7 @@ import Cards from '../components/Cards'
 import shoppingItems from '../assets/shopping-items.png'
 import linkingImg from '../assets/linking.png'
 
-export default function Home() {
+export default function Home(): JSX.Element {
     return (
         <>
             <header className="bg-sage">
