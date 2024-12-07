@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 type ItemProps = {
     name: string;
-    move: Function;
+    move: (name: string, marked: boolean) => void;
 }
 
 export default function Items({name, move}: ItemProps): JSX.Element {
@@ -27,3 +27,5 @@ export default function Items({name, move}: ItemProps): JSX.Element {
         </div>
     )
 }
+
+const [numArr, setNumArr] = useState([]);
