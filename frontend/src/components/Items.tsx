@@ -27,5 +27,3 @@ export default function Items({name, move}: ItemProps): JSX.Element {
         </div>
     )
 }
-
-const [numArr, setNumArr] = useState([]);
