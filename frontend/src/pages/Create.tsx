@@ -1,13 +1,12 @@
-import Navbar from '../components/Navbar'
-import CreateLinkForm from '../components/CreateLinkForm'
+import CreateLinkForm from "../components/forms/CreateLinkForm";
 
 export default function Create(): JSX.Element {
-    return (
-        <div className='bg-sage h-dvh text-center'>
-            <Navbar getStarted={true}/>
-            <h1 className="md:text-6xl text-5xl mt-16 md:max-w-xl mx-w-sm mx-auto font-cormorant font-bold">Let's make shopping easy</h1>
-            <CreateLinkForm/>
-        </div>
-        
-    )
+  return (
+    <div className="h-dvh bg-sage text-center">
+      <h1 className="mx-w-sm mx-auto pt-16 font-cormorant text-5xl font-bold md:max-w-xl md:text-6xl">
+        Let's make shopping easy
+      </h1>
+      <CreateLinkForm />
+    </div>
+  );
 }
