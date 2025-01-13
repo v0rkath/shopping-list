@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { ItemDetails, updateItemInList } from "../../network/list_api";
+import { getItemIndex } from "../../helper/list_parser";
+import { useListContext } from "../../context/useList";
 
 export type UpdateItem = {
   name: string;
@@ -30,6 +32,8 @@ export default function EditItemForm({
     link: link,
   });
 
+  const { shoppingList, setShoppingList } = useListContext();
+
   function handleChange(event: React.ChangeEvent<HTMLInputElement>): void {
     const updatedItem: string = event.target.value;
     if (event.target.name === "name") {
@@ -48,7 +52,7 @@ export default function EditItemForm({
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const itemData: ItemDetails = {};
-
+    const index = getItemIndex(shoppingList, identity);
     if (name !== data.name) {
       itemData.name = data.name;
     }
@@ -63,8 +67,28 @@ export default function EditItemForm({
       return;
     }
 
+    if (!shoppingList) {
+      throw new Error("shoppingList is undefined.");
+    }
+
+    const updatedItem = {
+      ...shoppingList.list[index],
+      name: data.name,
+      quantity: data.quantity,
+      link: data.link,
+    };
+    setShoppingList({
+      ...shoppingList,
+      list: [
+        ...shoppingList.list.slice(0, index),
+        updatedItem,
+        ...shoppingList.list.slice(index + 1),
+      ],
+    });
+
     try {
       await updateItemInList(paramId, identity, itemData);
+
       if (toggleDialog) {
         toggleDialog();
       }

@@ -1,22 +1,24 @@
-import { useState, useEffect, FormEvent, useRef } from "react";
+import { useEffect, FormEvent, useRef } from "react";
 import Items from "../components/Items";
-import { ListDocument, ListItem } from "../models/list.model";
+import { ListItem } from "../models/list.model";
 import { fetchList, addItemToList, clearList } from "../network/list_api";
 import { useParams } from "react-router-dom";
 import AddItemForm, { AddItemInterface } from "../components/forms/AddItemForm";
 import { Dialog } from "../components/common/Dialog";
+import { useListContext } from "../context/useList";
+import { ObjectId } from "bson";
+import { sortItems } from "../helper/list_parser";
 
 export default function List(): JSX.Element {
-  const [shoppingList, setShoppingList] = useState<ListDocument>();
-  const [listUpdated, setListUpdated] = useState(0);
-  const dialogRef = useRef<HTMLDialogElement>(null!);
+  const { shoppingList, setShoppingList } = useListContext();
+  // const [shoppingList, setShoppingList] = useState<ListDocument | undefined>();
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const paramId: string = useParams().id!;
 
   function toggleDialog(): void {
     if (!dialogRef.current) {
       return;
     }
-
     return dialogRef.current.hasAttribute("open")
       ? dialogRef.current.close()
       : dialogRef.current.showModal();
@@ -27,41 +29,64 @@ export default function List(): JSX.Element {
       try {
         const lists = await fetchList(paramId);
         const items = lists.list;
-        items.sort((a, b) => {
-          return a.marked === b.marked ? 0 : b.marked ? -1 : 1;
-        });
+        sortItems(items);
         setShoppingList(lists);
       } catch (error) {
         console.error(error);
       }
     }
     loadList();
-  }, [paramId, listUpdated]);
+  }, [paramId, setShoppingList]);
+
+  // function updateShoppingList(id: string, document: ListDocument, toUpdate: object) {
+  //   const index = document.list.findIndex(item => item._id === id);
+
+  //   if (index !== -1 && toUpdate.) {
+  //     document.list[index] = { ...document.list[index], }
+  //   }
+  // }
 
   async function addItem(
     event: FormEvent<HTMLFormElement>,
     data: AddItemInterface,
   ) {
     event.preventDefault();
-    const testArr: ListItem = {
+
+    const newItem: ListItem = {
       name: data.name,
       marked: false,
       quantity: data.quantity,
       link: data.link,
+      _id: new ObjectId().toString(),
     };
     try {
-      await addItemToList(testArr, paramId);
-      setListUpdated((prevSetList) => prevSetList + 1);
+      await addItemToList(newItem, paramId);
+      if (!shoppingList) {
+        throw new Error("shoppingList is undefined.");
+      }
+      const updatedList = {
+        ...shoppingList,
+        list: [...shoppingList.list, newItem],
+      };
+      sortItems(updatedList.list);
+      setShoppingList(updatedList);
     } catch (error) {
       console.error(error);
     }
   }
 
   async function clearItemList() {
-    console.log("clearItemList: list.tsx");
     try {
       await clearList(paramId);
-      setListUpdated((prevListUpdated) => prevListUpdated + 1);
+      if (!shoppingList) {
+        throw new Error("shoppingList is undefined.");
+      }
+      const clearedList = {
+        ...shoppingList,
+        list: [],
+      };
+      setShoppingList(clearedList);
+      // setListUpdated((prevListUpdated) => prevListUpdated + 1);
     } catch (error) {
       console.error(error);
     }
@@ -78,14 +103,9 @@ export default function List(): JSX.Element {
         itemMarked={item.marked}
         quantity={item.quantity}
         link={item.link}
-        refresh={() => setListUpdated((prevListUpdated) => prevListUpdated + 1)}
       />
     );
   });
-
-  useEffect(() => {
-    console.log(shoppingList);
-  }, [shoppingList]);
 
   function convertTime() {
     if (!shoppingList) {

@@ -1,10 +1,12 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { updateItemInList } from "../network/list_api"; // change to updateItemInList (this needs updating in backend to handle the marked)
 import { Link } from "react-router-dom";
 import { Dialog } from "./common/Dialog";
 import EditItemForm from "./forms/EditItemForm";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { useListContext } from "../context/useList";
+import { getItemIndex } from "../helper/list_parser";
 
 type ItemProps = {
   name: string;
@@ -13,7 +15,6 @@ type ItemProps = {
   itemMarked: boolean;
   quantity: number;
   link: string;
-  refresh: () => void;
   //move: (name: string, marked: boolean) => void;
 };
 
@@ -24,23 +25,45 @@ export default function Items({
   itemMarked,
   quantity,
   link,
-  refresh,
 }: ItemProps): JSX.Element {
-  const [marked, setMarked] = useState(itemMarked);
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const { shoppingList, setShoppingList } = useListContext();
+
+  function modifyShoppingList() {
+    if (!shoppingList) {
+      throw new Error("shoppingList is undefined.");
+    }
+
+    const index = getItemIndex(shoppingList, identity);
+
+    const updatedItem = {
+      ...shoppingList.list[index],
+      marked: !itemMarked,
+    };
+
+    const newListDocument = {
+      ...shoppingList,
+      list: [
+        ...shoppingList.list.slice(0, index),
+        updatedItem,
+        ...shoppingList.list.slice(index + 1),
+      ],
+    };
+
+    newListDocument.list.sort((a, b) => {
+      return a.marked === b.marked ? 0 : b.marked ? -1 : 1;
+    });
+    setShoppingList(newListDocument);
+  }
 
   async function handleClick() {
-    console.log(identity);
     try {
-      setMarked((prevMarked) => !prevMarked);
-      const itemInfo = { marked: !marked };
+      modifyShoppingList();
+      const itemInfo = { marked: !itemMarked };
       await updateItemInList(paramId, identity, itemInfo);
-      refresh();
     } catch (error) {
       console.error(error);
     }
-
-    //move(name, marked);
   }
 
   function toggleDialog(): void {
@@ -49,7 +72,7 @@ export default function Items({
     }
 
     if (dialogRef.current.hasAttribute("open")) {
-      refresh();
+      // refresh();
       return dialogRef.current.close();
     }
 
@@ -58,10 +81,10 @@ export default function Items({
 
   return (
     <div
-      className={`rounded-3xl ${marked ? "bg-neutral-100" : "bg-sage"} mb-4 mr-4 flex min-w-36 cursor-pointer flex-col justify-around p-4 text-left md:inline-flex`}
+      className={`rounded-3xl ${itemMarked ? "bg-neutral-100" : "bg-sage"} mb-4 mr-4 flex min-w-36 cursor-pointer flex-col justify-around p-4 text-left md:inline-flex`}
       onClick={handleClick}
     >
-      {marked ? (
+      {itemMarked ? (
         <p className="select-none pb-14 pl-1 text-xl font-medium text-zinc-500">
           <s>{name}</s>{" "}
           <span className="select-none text-sm text-zinc-500">x{quantity}</span>

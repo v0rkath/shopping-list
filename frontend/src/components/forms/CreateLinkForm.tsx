@@ -25,8 +25,6 @@ export default function CreateLinkForm(): JSX.Element {
       list: [],
     });
 
-    console.log(response._id);
-
     if (!updated) {
       setData((data) => ({ ...data, url: response._id }));
     }

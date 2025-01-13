@@ -32,13 +32,17 @@ export default function AddItemForm({ addItem }: ModalProps): JSX.Element {
     }
   }
 
+  function onSubmit(event: React.FormEvent<HTMLFormElement>) {
+    addItem(event, data);
+    setData({ name: "", quantity: 1, link: "" });
+  }
+
   return (
     <div className="mb-6 rounded-xl bg-neutral-100">
       <form
         className="flex max-w-sm flex-col justify-between p-10 md:max-w-full md:flex-row"
         onSubmit={(event) => {
-          addItem(event, data);
-          setData({ name: "", quantity: 1, link: "" });
+          onSubmit(event);
         }}
       >
         <div>

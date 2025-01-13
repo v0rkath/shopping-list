@@ -4,6 +4,7 @@ import Create from "./pages/Create";
 import Home from "./pages/Home";
 import List from "./pages/List";
 import BasicLayout from "./layouts/BasicLayout";
+import { ListProvider } from "./context/useList";
 
 function App(): JSX.Element {
   return (
@@ -14,7 +15,14 @@ function App(): JSX.Element {
           <Route path="/create" element={<Create />} />
         </Route>
         <Route element={<BasicLayout getStarted={false} />}>
-          <Route path="/list/:id" element={<List />} />
+          <Route
+            path="/list/:id"
+            element={
+              <ListProvider>
+                <List />
+              </ListProvider>
+            }
+          />
         </Route>
       </Routes>
     </BrowserRouter>

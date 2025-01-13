@@ -1,0 +1,13 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGO_URI=mongodb+srv://grinned:sad63bed1@cluster0.c0stx.mongodb.net/lists?retryWrites=true&w=majority&appName=Cluster0,
+      - PORT=5000
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "80:3000"

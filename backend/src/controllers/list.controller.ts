@@ -92,7 +92,6 @@ export const addItemToList: RequestHandler<
   const newItem = req.body;
   const newId = new mongoose.Types.ObjectId();
   newItem._id = newId;
-  console.log(req.body);
 
   try {
     if (!mongoose.isValidObjectId(listId)) {
@@ -180,7 +179,6 @@ export const clearList: RequestHandler<
   unknown,
   unknown
 > = async (req, res, next) => {
-  console.log("clearlist in controller");
   const listId = req.params.listId;
 
   try {
@@ -212,8 +210,6 @@ export const updateItemInList: RequestHandler<
 > = async (req, res, next) => {
   const listId = req.params.listId;
   const itemId = req.params.itemId;
-
-  console.log(`Req Body: ${req.body.quantity}`);
 
   try {
     if (

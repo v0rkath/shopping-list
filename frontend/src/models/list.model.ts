@@ -1,5 +1,5 @@
 export type ListItem = {
-  _id?: object;
+  _id?: string;
   name: string;
   marked: boolean;
   quantity: number;
